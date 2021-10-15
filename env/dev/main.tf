@@ -13,6 +13,7 @@ terraform {
 }
 
 locals {
+  env    = "dev-koichi"
   region = "ap-northeast-1"
   tagNames = {
     "aws-exam-resource" : true,
@@ -50,7 +51,8 @@ locals {
     },
   }
   instance_type = "t3.small"
-  image_id      = "ami-01e94099fb3acf7fa"
+  #image_id      = "ami-01e94099fb3acf7fa"
+  image_id = "ami-04671bc5dcaeedf5b"
 
   domain = "00111.engineed-exam.com"
 
@@ -87,7 +89,6 @@ module "service-servers" {
   user_data     = "/Volumes/exvol01/engineed/terraform/data/userdata.txt"
   security_groups = [
     module.web_sec_group_80.sec_group.id,
-    module.web_sec_group_443.sec_group.id,
     module.internal_ssh.sec_group.id,
     module.db_sec_group_3306.sec_group.id,
   ]
@@ -108,7 +109,6 @@ module "web_sec_group_80" {
   protocol    = "tcp"
   vpc_id      = module.network.vpc_id
 }
-
 module "web_sec_group_443" {
   source      = "../../modules/secgroup/"
   name        = "web_sec_group_443"
@@ -184,12 +184,12 @@ module "bastion" {
   subnet_id     = module.network.public_ids.0
   vpc_security_group_ids = [
     module.web_sec_group_80.sec_group.id,
-    module.web_sec_group_443.sec_group.id,
     module.internal_ssh.sec_group.id,
     module.db_sec_group_3306.sec_group.id,
   ]
-  tagNames  = local.tagNames
-  user_data = "/Volumes/exvol01/engineed/terraform/data/userdata.txt"
+  tagNames             = local.tagNames
+  user_data            = "/Volumes/exvol01/engineed/terraform/data/userdata.txt"
+  iam_instance_profile = module.iam.cwinstanceprofilename
 }
 
 module "cdn" {
@@ -198,4 +198,30 @@ module "cdn" {
   acm_certificate_arn = module.acm.aws_acm_certificate.arn
   alb_domain_name     = module.alb_https.alb.dns_name
   domain              = local.domain
+  web_acl_id          = module.waf.aws_wafv2_web_acl.arn
+}
+
+module "waf" {
+  source   = "../../modules/waf/"
+  tagNames = local.tagNames
+  providers = {
+    aws = aws.us_region
+  }
+}
+
+module "sec" {
+  source   = "../../modules/security/"
+  tagNames = local.tagNames
+  env      = local.env
+}
+
+module "iam" {
+  source   = "../../modules/iam/"
+  tagNames = local.tagNames
+}
+
+module "monitoring" {
+  source = "../../modules/monitoring"
+  AutoScalingGroupName = module.service-servers.autoscalingGroupname
+  alarm_actions = [module.service-servers.cpuscaleArn]
 }

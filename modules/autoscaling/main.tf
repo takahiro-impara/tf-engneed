@@ -63,3 +63,11 @@ resource "aws_autoscaling_group" "this" {
     create_before_destroy = true
   }
 }
+
+resource "aws_autoscaling_policy" "cpu" {
+  name                   = "${var.tagNames["Name"]}-cpuscale"
+  scaling_adjustment     = 6
+  adjustment_type        = "ChangeInCapacity"
+  cooldown               = 300
+  autoscaling_group_name = aws_autoscaling_group.this.name
+}

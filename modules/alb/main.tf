@@ -44,8 +44,29 @@ resource "aws_lb_listener" "this" {
   ssl_policy        = "ELBSecurityPolicy-2016-08"
   */
   default_action {
-    target_group_arn = aws_lb_target_group.ec2_http.arn
+    type = "fixed-response"
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "Not authorized"
+      status_code  = "403"
+    }
+  }
+}
+
+resource "aws_lb_listener_rule" "forward" {
+  listener_arn = aws_lb_listener.this.arn
+  priority     = 1
+
+  action {
     type             = "forward"
+    target_group_arn = aws_lb_target_group.ec2_http.arn
+  }
+
+  condition {
+    http_header {
+      http_header_name = "User-agent"
+      values           = ["Amazon CloudFront"]
+    }
   }
 }
 

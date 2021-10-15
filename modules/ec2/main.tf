@@ -25,6 +25,9 @@ variable "tagNames" {
 variable "user_data" {
 
 }
+variable "iam_instance_profile" {
+  
+}
 resource "aws_instance" "this" {
   ami                         = var.ami
   instance_type               = var.instance_type
@@ -34,4 +37,5 @@ resource "aws_instance" "this" {
   tags                        = var.tagNames
   associate_public_ip_address = "true"
   user_data                   = file(var.user_data)
+  iam_instance_profile = var.iam_instance_profile
 }

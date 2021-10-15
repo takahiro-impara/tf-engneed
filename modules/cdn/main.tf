@@ -14,6 +14,10 @@ variable "acm_certificate_arn" {
 variable "domain" {
 
 }
+
+variable "web_acl_id" {
+
+}
 resource "aws_cloudfront_distribution" "this" {
   aliases             = [var.domain]
   enabled             = true
@@ -24,7 +28,7 @@ resource "aws_cloudfront_distribution" "this" {
   tags                = var.tagNames
   tags_all            = var.tagNames
   wait_for_deployment = true
-
+  web_acl_id          = var.web_acl_id
   default_cache_behavior {
     allowed_methods = [
       "GET",
