@@ -98,7 +98,27 @@ module "service-servers" {
   azs                  = module.network.private_ids
   launch_name          = "service-servers"
   alb_target_group_arn = module.alb_https.alb_target_group_arn
+  topic_arn            = module.sns.topic_arn
 }
+module "manage-server" {
+  source        = "../../modules/autoscaling/"
+  image_id      = local.image_id
+  instance_type = local.instance_type
+  user_data     = "/Volumes/exvol01/engineed/terraform/data/userdata.txt"
+  security_groups = [
+    module.web_sec_group_80.sec_group.id,
+    module.internal_ssh.sec_group.id,
+    module.db_sec_group_3306.sec_group.id,
+  ]
+  min_size             = 1
+  max_size             = 1
+  tagNames             = local.tagNames
+  azs                  = module.network.private_ids
+  launch_name          = "manage-server"
+  alb_target_group_arn = module.alb_https.alb_target_group_arn_manage
+  topic_arn            = module.sns.topic_arn
+}
+
 
 module "web_sec_group_80" {
   source      = "../../modules/secgroup/"
@@ -221,7 +241,18 @@ module "iam" {
 }
 
 module "monitoring" {
-  source = "../../modules/monitoring"
+  source               = "../../modules/monitoring"
   AutoScalingGroupName = module.service-servers.autoscalingGroupname
-  alarm_actions = [module.service-servers.cpuscaleArn]
+  alarm_actions        = [module.service-servers.cpuscaleArn]
+}
+
+module "s3" {
+  source   = "../../modules/sitaticSite_s3/"
+  tagNames = local.tagNames
+  env      = local.env
+}
+
+module "sns" {
+  source   = "../../modules/sns/"
+  tagNames = local.tagNames
 }

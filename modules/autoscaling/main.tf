@@ -37,6 +37,10 @@ variable "launch_name" {
 variable "alb_target_group_arn" {
 
 }
+
+variable "topic_arn" {
+
+}
 resource "aws_launch_template" "this" {
   name_prefix            = var.launch_name
   image_id               = var.image_id
@@ -70,4 +74,18 @@ resource "aws_autoscaling_policy" "cpu" {
   adjustment_type        = "ChangeInCapacity"
   cooldown               = 300
   autoscaling_group_name = aws_autoscaling_group.this.name
+}
+
+resource "aws_autoscaling_notification" "this" {
+  group_names = [
+    aws_autoscaling_group.this.name
+  ]
+
+  notifications = [
+    "autoscaling:EC2_INSTANCE_TERMINATE",
+    "autoscaling:EC2_INSTANCE_LAUNCH_ERROR",
+    "autoscaling:EC2_INSTANCE_TERMINATE_ERROR",
+  ]
+
+  topic_arn = var.topic_arn
 }

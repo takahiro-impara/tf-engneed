@@ -28,6 +28,11 @@ resource "aws_iam_role_policy_attachment" "cloudWatchattach" {
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
 }
 
+resource "aws_iam_role_policy_attachment" "S3ReadOnly" {
+  role       = aws_iam_role.cloudwatchAgent.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+}
+
 resource "aws_iam_instance_profile" "ins_profile" {
   name = "ins_profile"
   role = aws_iam_role.cloudwatchAgent.name

@@ -48,7 +48,28 @@ resource "aws_cloudfront_distribution" "this" {
     target_origin_id         = var.alb_domain_name
     viewer_protocol_policy   = "https-only"
   }
+  ordered_cache_behavior {
+    allowed_methods = [
+      "GET",
+      "HEAD",
+    ]
+    cache_policy_id = "658327ea-f89d-4fab-a63d-7e88639e58f6"
+    cached_methods = [
+      "GET",
+      "HEAD",
+    ]
+    compress                 = true
+    default_ttl              = 0
+    max_ttl                  = 0
+    min_ttl                  = 0
+    path_pattern             = "/manage*"
+    smooth_streaming         = false
+    target_origin_id         = var.alb_domain_name
+    viewer_protocol_policy   = "https-only"
+    origin_request_policy_id = "5e015dea-0a15-490f-88a1-af94b286a673"
 
+
+  }
   origin {
     connection_attempts = 3
     connection_timeout  = 10

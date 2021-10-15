@@ -8,12 +8,12 @@ variable "alarm_actions" {
 resource "aws_cloudwatch_metric_alarm" "autoscaling" {
   alarm_name          = "autoscaling_CPUutil"
   comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods  = "2"
+  evaluation_periods  = "1"
   metric_name         = "CPUUtilization"
   namespace           = "AWS/EC2"
-  period              = "120"
+  period              = "60"
   statistic           = "Average"
-  threshold           = "80"
+  threshold           = "1"
 
   dimensions = {
     AutoScalingGroupName = var.AutoScalingGroupName

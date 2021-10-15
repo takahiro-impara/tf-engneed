@@ -68,10 +68,54 @@ resource "aws_lb_listener_rule" "forward" {
       values           = ["Amazon CloudFront"]
     }
   }
+  condition {
+    path_pattern {
+      values = ["/"]
+    }
+  }
+}
+
+resource "aws_lb_listener_rule" "manage-forward" {
+  listener_arn = aws_lb_listener.this.arn
+  priority     = 2
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.manage.arn
+  }
+
+  condition {
+    http_header {
+      http_header_name = "User-agent"
+      values           = ["Amazon CloudFront"]
+    }
+  }
+  condition {
+    path_pattern {
+      values = ["/manage*"]
+    }
+  }
 }
 
 resource "aws_lb_target_group" "ec2_http" {
-  name     = "inomaso-dev-alb-tg"
+  name     = "service-target"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = var.vpc_id
+
+  health_check {
+    interval            = 10
+    path                = "/"
+    port                = "traffic-port"
+    protocol            = "HTTP"
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+  }
+}
+
+resource "aws_lb_target_group" "manage" {
+  name     = "manage-target"
   port     = 80
   protocol = "HTTP"
   vpc_id   = var.vpc_id
