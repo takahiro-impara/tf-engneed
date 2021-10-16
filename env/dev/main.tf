@@ -4,11 +4,12 @@ terraform {
       source = "hashicorp/aws"
     }
   }
-  backend "s3" {
-    bucket   = "tf-state-00111"
-    key      = "terraform.tfstate"
-    region   = "ap-northeast-1"
-    role_arn = "arn:aws:iam::732575084868:role/EngineedExam00111"
+  backend "remote" {
+    organization = "impara8"
+
+    workspaces {
+      name = "tf-engneed"
+    }
   }
 }
 
