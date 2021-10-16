@@ -1,4 +1,5 @@
 terraform {
+  required_version = "~> 1.0.0"
   required_providers {
     aws = {
       source = "hashicorp/aws"
@@ -14,7 +15,7 @@ terraform {
 }
 
 locals {
-  env    = "dev-koichi"
+  env    = "dev-koichi1"
   region = "ap-northeast-1"
   tagNames = {
     "aws-exam-resource" : true,
