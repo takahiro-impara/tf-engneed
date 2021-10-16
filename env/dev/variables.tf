@@ -3,11 +3,11 @@ variable "assume_role" {
 }
 
 variable "username" {
-  default = "admin"
+  default   = "admin"
   sensitive = true
 }
 
 variable "password" {
-  default = "PassW0rd!"
+  default   = "PassW0rd!"
   sensitive = true
 }
