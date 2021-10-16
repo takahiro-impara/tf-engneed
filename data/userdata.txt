@@ -19,5 +19,7 @@ Content-Disposition: attachment; filename="userdata.txt"
  
 #!/bin/bash
 
-/home/ec2-user/initialize.sh xxx.rds.amazonaws.com rrr xx zzzzz
+/home/ec2-user/initialize.sh eng-exam.cluster-clgjyds3jw9z.ap-northeast-1.rds.amazonaws.com admin PassW0rd! 00111
+yum install -y awslogs
+systemctl start awslogsd
 --//
