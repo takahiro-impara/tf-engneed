@@ -88,7 +88,7 @@ module "service-servers" {
   source        = "../../modules/autoscaling/"
   image_id      = local.image_id
   instance_type = local.instance_type
-  user_data     = "/Volumes/exvol01/engineed/terraform/data/userdata.txt"
+  user_data     = "../../data/userdata.txt"
   security_groups = [
     module.web_sec_group_80.sec_group.id,
     module.internal_ssh.sec_group.id,
@@ -210,7 +210,7 @@ module "bastion" {
     module.db_sec_group_3306.sec_group.id,
   ]
   tagNames             = local.tagNames
-  user_data            = "/Volumes/exvol01/engineed/terraform/data/userdata.txt"
+  user_data            = "../../data/userdata.txt"
   iam_instance_profile = module.iam.cwinstanceprofilename
 }
 
