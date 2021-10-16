@@ -123,8 +123,8 @@ module "manage-server" {
 module "web_sec_group_80" {
   source      = "../../modules/secgroup/"
   name        = "web_sec_group_80"
+    server_port = 80
   tagNames    = local.tagNames
-  server_port = 80
   cidr_blocks = ["0.0.0.0/0"]
   protocol    = "tcp"
   vpc_id      = module.network.vpc_id
